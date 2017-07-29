@@ -1,12 +1,30 @@
 import React, {Component} from "react";
-import {View, Text, TextInput} from "react-native";
+import {View, Text, TextInput, FlatList} from "react-native";
 import {connect} from "react-redux";
-import {textInputHandleAction} from "../actions";
+import {textInputHandleAction, fetchDataAction} from "../actions";
 
 class List extends Component {
 
   textInputHandle(text) {
     this.props.textInputHandleAction(text);
+  }
+
+  componentDidMount() {
+    this.props.fetchDataAction();
+  }
+
+  renderListData() {
+    console.log(this.props.data.loading)
+    if(this.props.data.loading) {
+      return(<Text> Loading ... </Text>)
+    } else {
+      return(
+        <FlatList data={this.props.data.data}
+          renderItem={({item}) => <Text>{item.title}</Text>}
+          keyExtractor={(item, index) => item.id}
+        />
+      )
+    }
   }
 
   render() {
@@ -18,6 +36,7 @@ class List extends Component {
           onChangeText={(text) => this.textInputHandle(text)}
         />
         <Text>{this.props.data.text}</Text>
+        {this.renderListData()}
       </View>
     )
   }
@@ -29,4 +48,4 @@ const mapStateToProps = state => {
   }
 };
 
-export default connect(mapStateToProps, {textInputHandleAction})(List);
+export default connect(mapStateToProps, {textInputHandleAction, fetchDataAction})(List);
